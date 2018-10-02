@@ -5,8 +5,9 @@ date: "October 1, 2018"
 output: github_document
 ---
 
-```{r set up, include = FALSE}
+```{r set up}
 library(tidyverse)
+library(readxl)
 ```
 
 
@@ -17,8 +18,8 @@ This problem focuses on NYC Transit data; in particular, this CSV file contains 
 Read and clean the data; retain line, station, name, station latitude / longitude, routes served, entry, vending, entrance type, and ADA compliance. Convert the entry variable from character (YES vs NO) to a logical variable (the ifelse or recode function may be useful).
 
 ```{r data import}
-nycsubway = read_csv(file = "./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") #relative path instead of absolute path
-nycsubway = janitor::clean_names(nycsubway) #clean up variable names
+nycsubway = read_csv(file = "./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>%  #relative path instead of absolute path
+  janitor::clean_names() #clean up variable names
 
 nycsubway
 skimr::skim(nycsubway)
@@ -73,6 +74,104 @@ p2
 Reformat data so that route number and route name are distinct variables. How many distinct stations serve the A train? Of the stations that serve the A train, how many are ADA compliant?
 
 ```{r reformat}
-distinct(nyc_subway, line, station_name) 
+  filter(nyc_subway, route1 == "A") %>% 
+  nrow()
 ```
 
+
+# problem 2
+This problem uses the Mr. Trash Wheel dataset, available as an Excel file on the course website. Please use the  HealthyHarborWaterWheelTotals2017-9-26.xlsx version.
+
+Read and clean the Mr. Trash Wheel sheet:
+
+* specify the sheet in the Excel file and to omit columns containing notes (using the range argument and cell_cols() function)
+
+* use reasonable variable names
+
+* omit rows that do not include dumpster-specific data
+
+* round the number of sports balls to the nearest integer and converts the result to an integer variable (using as.integer)
+
+```{r TRASHWHEEL import and clean}
+waterwheel = read_excel(path = "./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = "Mr. Trash Wheel", range = cell_cols("A:N")) %>% # omit column O which contains notes
+  janitor::clean_names() %>% # clean up for reasonable variable names
+  filter(!is.na(dumpster)) %>% # omit rows which are "month total""
+  mutate(
+    sports_balls = round(sports_balls), # round sports balls to nearest integer
+    sports_balls = as.integer(sports_balls) # convert sports balls from dbl to int
+  )
+
+waterwheel
+skimr::skim(waterwheel)
+```
+
+Read and clean precipitation data for 2016 and 2017. For each, omit rows without precipitation data and add a variable year. Next, combine datasets and convert month to a character variable (the variable month.name is built into R and should be useful).
+
+```{r 2016 import and clean}
+precipitaion_2016 =  read_excel(path = "./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = "2016 Precipitation", skip = 1) %>% # use "skip" to overlook note "Precipitation (in)" in row 1
+  janitor::clean_names() %>% # clean up variable names
+  filter(!is.na(total) & !is.na(month)) %>% # omit rows without precipitation data
+  mutate(year = 2016) %>% # add a "year" variable
+  select(year, month, total) # let the data be more explicit
+
+precipitaion_2016
+```
+
+```{r 2017 import and clean}
+precipitaion_2017 =  read_excel(path = "./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = "2017 Precipitation", skip = 1) %>% # use "skip" to overlook note "Precipitation (in)" in row 1
+  janitor::clean_names() %>% # clean up variable names
+  filter(!is.na(total) & !is.na(month)) %>% # omit rows without precipitation data
+  mutate(year = 2017) %>% # add a "year" variable
+  select(year, month, total) # let the data be more explicit
+
+precipitaion_2017
+```
+
+```{r 2016 and 2017 combine}
+precipitation = left_join(precipitaion_2016, precipitaion_2017, by = "month") %>% # combine precipitation_2016 and precipitation_2017 using left join way
+  janitor::clean_names() %>% # clean up variable names
+  select(month, everything()) %>% # let common "month" variable to show at first
+  mutate(month = month.name) # cinvert "month" to character variable
+
+precipitation
+```
+
+
+Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables. For available data, what was the total precipitation in 2017? What was the median number of sports balls in a dumpster in 2016?
+
+**The waterwheel dataset is derived from "Mr. Trash Wheel" sheet in "HealthyHarborWaterWheelTotals2017-9-26.xlsx". This dataset contains `r nrow(waterwheel)` observations and each with `r ncol(waterwheel)` related characteristics (`r names(waterwheel)`). Here are several examples: **
+```{r waterwheel example, echo = FALSE}
+head(waterwheel)
+```
+
+**The precipitation dataset is derived from "2016 Precipitation" and "2017 Precipitation" sheets in "HealthyHarborWaterWheelTotals2017-9-26.xlsx". This dataset contains `r nrow(precipitation)` rows and `r ncol(precipitation)` columns for observations. The key variables are `r names(precipitation)`. Here are several examples: **
+```{r precipitation example, echo = FALSE}
+head(precipitation)
+```
+
+**For available data, the total precipitation in 2017 is `r sum(precipitation$total_y, na.rm = TRUE)`.**
+
+```{r waterwheel 2016 sports balls, include = FALSE}
+sportsballs_2016 = filter(waterwheel, year == 2016) %>% 
+  select(year, sports_balls)
+```
+
+**The median number of sports balls in a dumpster in 2016 is `r median(sportsballs_2016$sports_balls)`.**
+
+# Problem 3
+
+This problem uses the BRFSS data. DO NOT include this dataset in your local data directory; instead, load the data from the  p8105.datasets package.
+
+For this question:
+
+format the data to use appropriate variable names;
+focus on the “Overall Health” topic
+exclude variables for class, topic, question, sample size, and everything from lower confidence limit to GeoLocation
+structure data so that values for Response (“Excellent” to “Poor”) are column names / variables which indicate the proportion of subjects with each response (which are values of Data_value in the original dataset)
+create a new variable showing the proportion of responses that were “Excellent” or “Very Good”
+Using this dataset, do or answer the following:
+
+How many unique locations are included in the dataset? Is every state represented? What state is observed the most?
+In 2002, what is the median of the “Excellent” response value?
+Make a histogram of “Excellent” response values in the year 2002.
+Make a scatterplot showing the proportion of “Excellent” response values in New York County and Queens County (both in NY State) in each year from 2002 to 2010.
