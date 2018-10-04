@@ -59,14 +59,14 @@ filter(nyc_subway, ada == TRUE) %>%
 * What proportion of station entrances / exits without vending allow entrance?
 
 ```{r proportion without vending}
-entry1 = filter(nycsubway, entry == "YES") #station entrances
-entry2 = filter(entry1, vending == "NO") #entrances without vending
-p1 = nrow(entry2)/nrow(entry1) #proportion of entrances without vending
+entry1 = filter(nycsubway, entry == "YES") # station entrances
+entry2 = filter(entry1, vending == "NO") # entrances without vending
+p1 = nrow(entry2)/nrow(entry1) # proportion of entrances without vending
 p1 
 
-exit1 = filter(nycsubway, exit_only == "Yes") #station exits
-exit2 = filter(exit1, vending == "NO") #exits without vending
-p2 = nrow(exit2)/nrow(exit1) #proportion of exits without vending
+exit1 = filter(nycsubway, exit_only == "Yes") # station exits
+exit2 = filter(exit1, vending == "NO") # exits without vending
+p2 = nrow(exit2)/nrow(exit1) # proportion of exits without vending
 p2
 ```
 
@@ -74,7 +74,10 @@ p2
 Reformat data so that route number and route name are distinct variables. How many distinct stations serve the A train? Of the stations that serve the A train, how many are ADA compliant?
 
 ```{r reformat}
-  filter(nyc_subway, route1 == "A") %>% 
+filter(nyc_subway, route1 == "A") %>% 
+  nrow()
+
+filter(nyc_subway, route1 == "A" & ada == TRUE) %>% 
   nrow()
 ```
 
