@@ -83,7 +83,7 @@ filter(nyc_subway, route1 == "A" & ada == TRUE) %>%
 
 
 # problem 2
-This problem uses the Mr. Trash Wheel dataset, available as an Excel file on the course website. Please use the  HealthyHarborWaterWheelTotals2017-9-26.xlsx version.
+This problem uses the Mr. Trash Wheel dataset, available as an Excel file on the course website. Please use the  HealthyHarborWaterWheelTotals2018-7-28.xlsx version.
 
 Read and clean the Mr. Trash Wheel sheet:
 
@@ -96,7 +96,7 @@ Read and clean the Mr. Trash Wheel sheet:
 * round the number of sports balls to the nearest integer and converts the result to an integer variable (using as.integer)
 
 ```{r TRASHWHEEL import and clean}
-waterwheel = read_excel(path = "./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = "Mr. Trash Wheel", range = cell_cols("A:N")) %>% # omit column O which contains notes
+waterwheel = read_excel(path = "./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "Mr. Trash Wheel", range = cell_cols("A:N")) %>% # omit column O which contains notes
   janitor::clean_names() %>% # clean up for reasonable variable names
   filter(!is.na(dumpster)) %>% # omit rows which are "month total""
   mutate(
@@ -111,7 +111,7 @@ skimr::skim(waterwheel)
 Read and clean precipitation data for 2016 and 2017. For each, omit rows without precipitation data and add a variable year. Next, combine datasets and convert month to a character variable (the variable month.name is built into R and should be useful).
 
 ```{r 2016 import and clean}
-precipitaion_2016 =  read_excel(path = "./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = "2016 Precipitation", skip = 1) %>% # use "skip" to overlook note "Precipitation (in)" in row 1
+precipitaion_2016 =  read_excel(path = "./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2016 Precipitation", skip = 1) %>% # use "skip" to overlook note "Precipitation (in)" in row 1
   janitor::clean_names() %>% # clean up variable names
   filter(!is.na(total) & !is.na(month)) %>% # omit rows without precipitation data
   mutate(year = 2016) %>% # add a "year" variable
@@ -121,7 +121,7 @@ precipitaion_2016
 ```
 
 ```{r 2017 import and clean}
-precipitaion_2017 =  read_excel(path = "./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = "2017 Precipitation", skip = 1) %>% # use "skip" to overlook note "Precipitation (in)" in row 1
+precipitaion_2017 =  read_excel(path = "./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2017 Precipitation", skip = 1) %>% # use "skip" to overlook note "Precipitation (in)" in row 1
   janitor::clean_names() %>% # clean up variable names
   filter(!is.na(total) & !is.na(month)) %>% # omit rows without precipitation data
   mutate(year = 2017) %>% # add a "year" variable
@@ -134,7 +134,7 @@ precipitaion_2017
 precipitation = left_join(precipitaion_2016, precipitaion_2017, by = "month") %>% # combine precipitation_2016 and precipitation_2017 using left join way
   janitor::clean_names() %>% # clean up variable names
   select(month, everything()) %>% # let common "month" variable to show at first
-  mutate(month = month.name) # cinvert "month" to character variable
+  mutate(month = month.name) # convert "month" to character variable
 
 precipitation
 ```
@@ -142,12 +142,12 @@ precipitation
 
 Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables. For available data, what was the total precipitation in 2017? What was the median number of sports balls in a dumpster in 2016?
 
-**The waterwheel dataset is derived from "Mr. Trash Wheel" sheet in "HealthyHarborWaterWheelTotals2017-9-26.xlsx". This dataset contains `r nrow(waterwheel)` observations and each with `r ncol(waterwheel)` related characteristics (`r names(waterwheel)`). Here are several examples: **
+**The waterwheel dataset is derived from "Mr. Trash Wheel" sheet in "HealthyHarborWaterWheelTotals2018-7-28.xlsx". This dataset contains `r nrow(waterwheel)` observations and each with `r ncol(waterwheel)` related characteristics (`r names(waterwheel)`). Here are several examples: **
 ```{r waterwheel example, echo = FALSE}
 head(waterwheel)
 ```
 
-**The precipitation dataset is derived from "2016 Precipitation" and "2017 Precipitation" sheets in "HealthyHarborWaterWheelTotals2017-9-26.xlsx". This dataset contains `r nrow(precipitation)` rows and `r ncol(precipitation)` columns for observations. The key variables are `r names(precipitation)`. Here are several examples: **
+**The precipitation dataset is derived from "2016 Precipitation" and "2017 Precipitation" sheets in "HealthyHarborWaterWheelTotals2018-7-28.xlsx". This dataset contains `r nrow(precipitation)` rows and `r ncol(precipitation)` columns for observations. The key variables are `r names(precipitation)`. Here are several examples: **
 ```{r precipitation example, echo = FALSE}
 head(precipitation)
 ```
