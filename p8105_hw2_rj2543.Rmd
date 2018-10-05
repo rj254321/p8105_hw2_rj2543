@@ -76,6 +76,8 @@ p2
 Reformat data so that route number and route name are distinct variables. How many distinct stations serve the A train? Of the stations that serve the A train, how many are ADA compliant?
 
 ```{r reformat}
+gather(nyc_subway, "route1":"route11", key = "route_number", value = "route_name")
+
 filter(nyc_subway, route1 == "A") %>% 
   distinct(line, station_name) %>% 
   nrow()
