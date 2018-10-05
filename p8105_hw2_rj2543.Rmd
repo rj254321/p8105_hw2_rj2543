@@ -27,24 +27,23 @@ skimr::skim(nycsubway)
 
 ```{r data clean}
 nyc_subway = 
-  select(nycsubway, line, station_name, station_latitude, station_longitude, route1:route11, entry, vending, entrance_type, ada) %>%  #select required variables
-  mutate(entry = (entry == "YES")) #convert entry variable from character to logical, yes = TRUE
+  select(nycsubway, line, station_name, station_latitude, station_longitude, route1:route11, entry, vending, entrance_type, ada) %>%  # select required variables
+  mutate(entry = (entry == "YES")) # convert "entry" variable from character to logical, yes = TRUE
 
 nyc_subway
-str(nyc_subway)
 ```
 
 
 Write a short paragraph about this dataset – explain briefly what variables the dataset contains, describe your data cleaning steps so far, and give the dimension (rows x columns) of the resulting dataset. Are these data tidy?
 
-**The nyc_subway dataset is derived from the original imported data which comes from "NYC_Transit_Subway_Entrance_And_Exit_Data.csv". This dataset contains `r names(nyc_subway)` variables. The data cleaning steps are: 1) First import the data via the relative path instead of the absolute path in order to make code reproducible. 2) Second clean up variable names for future referrence. 3) Third select variables that are addressed in the problem requirement. 4) Fourth convert the entry variable from the original character structure to the logical structure ("YES" refers to "TRUE" while "NO" refers to "FALSE"). The resulting dataset has `r nrow(nyc_subway)` rows and `r ncol(nyc_subway)` columns. These data are not tidy enough since route1 to route11 variables,line and station_name are somehow redundant.**
+**The nyc_subway dataset is derived from the original imported data which comes from "NYC_Transit_Subway_Entrance_And_Exit_Data.csv". This dataset contains `r names(nyc_subway)` variables. The data cleaning steps are: 1) First import the data via the relative path instead of the absolute path in order to make code reproducible. 2) Second clean up variable names for future referrence. 3) Third select variables that are addressed in the problem requirement. 4) Fourth convert the "entry" variable from the original character structure to the logical structure ("YES" refers to "TRUE" while "NO" refers to "FALSE"). The resulting dataset has `r nrow(nyc_subway)` rows and `r ncol(nyc_subway)` columns. These data are not tidy enough since data are somehow redundant.**
 
 Answer the following questions using these data:
 
 * How many distinct stations are there? Note that stations are identified both by name and by line (e.g. 125th St A/B/C/D; 125st 1; 125st 4/5); the distinct function may be useful here.
 
 ```{r dinstint stations}
-distinct(nyc_subway, line, station_name) %>% 
+distinct(nyc_subway, line, station_name) %>% # identify distinct station by "line" and "station_name"
   nrow()
 ```
 
@@ -52,6 +51,7 @@ distinct(nyc_subway, line, station_name) %>%
 
 ```{r ADA compliant}
 filter(nyc_subway, ada == TRUE) %>% 
+  distinct(line, station_name) %>% # I guess the question means "distinct" stations?
   nrow()
 ```
 
@@ -60,12 +60,14 @@ filter(nyc_subway, ada == TRUE) %>%
 
 ```{r proportion without vending}
 entry1 = filter(nycsubway, entry == "YES") # station entrances
-entry2 = filter(entry1, vending == "NO") # entrances without vending
+entry2 = filter(nycsubway, entry == "YES" & vending == "NO") # entrances without vending
+
 p1 = nrow(entry2)/nrow(entry1) # proportion of entrances without vending
-p1 
+p1
 
 exit1 = filter(nycsubway, exit_only == "Yes") # station exits
-exit2 = filter(exit1, vending == "NO") # exits without vending
+exit2 = filter(nycsubway, exit_only == "Yes" & vending == "NO") # exits without vending
+
 p2 = nrow(exit2)/nrow(exit1) # proportion of exits without vending
 p2
 ```
@@ -75,9 +77,11 @@ Reformat data so that route number and route name are distinct variables. How ma
 
 ```{r reformat}
 filter(nyc_subway, route1 == "A") %>% 
+  distinct(line, station_name) %>% 
   nrow()
 
-filter(nyc_subway, route1 == "A" & ada == TRUE) %>% 
+filter(nyc_subway, route1 == "A" & ada == TRUE) %>%
+  distinct(line, station_name) %>% 
   nrow()
 ```
 
