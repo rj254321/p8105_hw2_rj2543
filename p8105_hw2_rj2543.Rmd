@@ -216,6 +216,7 @@ distinct(brfss_smart2010, brfss_smart2010$locationabbr) %>%
 abbrcount = count(brfss_smart2010, locationabbr)
 abbrmax = max(abbrcount$n)
 filter(abbrcount, n == abbrmax)
+# another approach: arrange "count" result first in descending order, then "head"
 ```
 
 
