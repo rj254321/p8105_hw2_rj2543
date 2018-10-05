@@ -102,9 +102,9 @@ Read and clean the Mr. Trash Wheel sheet:
 ```{r TRASHWHEEL import and clean}
 waterwheel = read_excel(path = "./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "Mr. Trash Wheel", range = cell_cols("A:N")) %>% # omit column O which contains notes
   janitor::clean_names() %>% # clean up for reasonable variable names
-  filter(!is.na(dumpster)) %>% # omit rows which are "month total""
+  filter(!is.na(dumpster)) %>% # omit rows which are "month total"
   mutate(
-    sports_balls = round(sports_balls), # round sports balls to nearest integer
+    sports_balls = round(sports_balls), # round "sports_balls" to nearest integer
     sports_balls = as.integer(sports_balls) # convert sports balls from dbl to int
   )
 
@@ -146,12 +146,12 @@ precipitation
 
 Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables. For available data, what was the total precipitation in 2017? What was the median number of sports balls in a dumpster in 2016?
 
-**The waterwheel dataset is derived from "Mr. Trash Wheel" sheet in "HealthyHarborWaterWheelTotals2018-7-28.xlsx". This dataset contains `r nrow(waterwheel)` observations and each with `r ncol(waterwheel)` related characteristics (`r names(waterwheel)`). Here are several examples: **
+**The waterwheel dataset is derived from "Mr. Trash Wheel" sheet in "HealthyHarborWaterWheelTotals2018-7-28.xlsx". This dataset contains `r nrow(waterwheel)` observations and each with `r ncol(waterwheel)` related characteristics: (`r names(waterwheel)`). Here are several examples: **
 ```{r waterwheel example, echo = FALSE}
 head(waterwheel)
 ```
 
-**The precipitation dataset is derived from "2016 Precipitation" and "2017 Precipitation" sheets in "HealthyHarborWaterWheelTotals2018-7-28.xlsx". This dataset contains `r nrow(precipitation)` rows and `r ncol(precipitation)` columns for observations. The key variables are `r names(precipitation)`. Here are several examples: **
+**The precipitation dataset is derived from "2016 Precipitation" and "2017 Precipitation" sheets in "HealthyHarborWaterWheelTotals2018-7-28.xlsx". This dataset contains `r nrow(precipitation)` rows and `r ncol(precipitation)` columns for observations. The key variables are: `r names(precipitation)`. Here are several examples: **
 ```{r precipitation example, echo = FALSE}
 head(precipitation)
 ```
@@ -167,7 +167,7 @@ sportsballs_2016 = filter(waterwheel, year == 2016) %>%
 
 # Problem 3
 
-This problem uses the BRFSS data. DO NOT include this dataset in your local data directory; instead, load the data from the  p8105.datasets package.
+This problem uses the BRFSS data. DO NOT include this dataset in your local data directory; instead, load the data from the p8105.datasets package.
 
 ```{r load package}
 devtools::install_github("p8105/p8105.datasets")
@@ -207,10 +207,11 @@ Using this dataset, do or answer the following:
 * How many unique locations are included in the dataset? Is every state represented? What state is observed the most?
 
 ```{r location}
+distinct(brfss_smart2010, brfss_smart2010$locationdesc) %>% 
+  nrow() # unique locations
 
-skimr::skim(brfss_smart2010$locationdesc)
-
-skimr::skim(brfss_smart2010$locationabbr)
+distinct(brfss_smart2010, brfss_smart2010$locationabbr) %>% 
+  nrow() # unique states
 ```
 
 
