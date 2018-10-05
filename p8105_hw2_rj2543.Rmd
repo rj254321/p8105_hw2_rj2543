@@ -212,6 +212,10 @@ distinct(brfss_smart2010, brfss_smart2010$locationdesc) %>%
 
 distinct(brfss_smart2010, brfss_smart2010$locationabbr) %>% 
   nrow() # unique states
+
+abbrcount = count(brfss_smart2010, locationabbr)
+abbrmax = max(abbrcount$n)
+filter(abbrcount, n == abbrmax)
 ```
 
 
